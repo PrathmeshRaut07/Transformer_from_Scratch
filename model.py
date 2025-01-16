@@ -92,5 +92,23 @@ class MultiHeadAttentionBlock(nn.Module):
         # Multiply by Wo
         # (batch, seq_len, d_model) --> (batch, seq_len, d_model)  
         return self.w_o(x)
+import matplotlib.pyplot as plt    
+multi_head_attention = MultiHeadAttentionBlock(d_model=128, h=8, dropout=0.2)    
+# Pass the encodings through the multi-head attention block
+output = multi_head_attention(encodings, encodings, encodings,mask=None)  # Self-attention: q, k, v are the same
+print("Multi-head attention output shape:", output.shape)  # Should print torch.Size([1, 4, 128])
 
+# Extract attention scores
+attention_scores = multi_head_attention.attention_scores
+print("Attention scores shape:", attention_scores.shape)  # Should print torch.Size([1, 8, 4, 4])
+
+# Plot attention scores for the first head
+head_idx = 0  # Choose which head to visualize
+plt.figure(figsize=(8, 6))
+plt.imshow(attention_scores[0, head_idx].detach().numpy(), cmap='viridis')
+plt.colorbar()
+plt.title(f"Attention Scores (Head {head_idx + 1})")
+plt.xlabel("Key Tokens")
+plt.ylabel("Query Tokens")
+plt.show()
 
